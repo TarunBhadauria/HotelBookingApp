@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv').config();
-const url = process.env.DB_URL
+const url = process.env.DATABASE_URL
 
 exports.connect = async () => {
    await mongoose.connect(process.env.DB_URL, {
@@ -12,8 +12,6 @@ exports.connect = async () => {
         console.log("Connect failed ");
         console.log("Error", error);
     })
-
-
 }
 
 
