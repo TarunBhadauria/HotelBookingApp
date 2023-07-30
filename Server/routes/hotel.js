@@ -12,9 +12,9 @@ router.get('/getSingleHotelDetails', );
 router.get('/getFilteredRooms', );
 router.post('/createHotel', );
 router.put('/updateHotel', );
+router.delete('/deleteHotel', );
 router.post('/addRooms', );
 router.put('/updateRooms', );
-router.delete('/deleteHotel', );
 router.delete('/removeRooms', );
 router.post('/report', );
 

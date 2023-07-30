@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
     },
     accountType:{
         type:String,
-        enum:["Owner","User"]
+        enum:["owner","user", "admin"]
     },
     booking:{
         type:mongoose.Schema.Types.ObjectId,
