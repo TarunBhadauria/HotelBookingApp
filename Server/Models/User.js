@@ -2,46 +2,43 @@ const mongoose = require('mongoose');
 
 
 const userSchema = new mongoose.Schema({
-    firstname:{
+    firstName:{
         type:String,
-        requrequired:true
+        required:true
     },
     lastName:{
         type:String,
         required:true
     },
-    phone:{
+    email:{
         type:String,
+        required: true,
     },
     password:{
         type:String,
-        required:true
+        required:true,
+        select: false,
+        minLenght: 8,
     },
     accountType:{
         type:String,
         enum:["owner","user", "admin"]
     },
-    booking:{
+    booking:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Booking"
-    },
-    hotels:{
+    }],
+    hotels:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Hotel"
-    },
-    image:{
-        type:String
-    },
-    token:{
-        type:String,
-    },
-    resetPassword:{
+    }],
+    resetPasswordToken:{
         type:Date   
     },
-    additionalDetails:{
+    profile:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"AdditionalDetails"
+        ref:"Profile"
     }
 })
 
-module.exports = mongoose.Model("User",userSchema);
+module.exports = mongoose.Model("User", userSchema);

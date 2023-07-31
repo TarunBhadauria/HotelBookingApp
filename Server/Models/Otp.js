@@ -1,16 +1,20 @@
 const mongoose = require('mongoose');
 
 const otpSchema = new mongoose.Schema({
-    phone:{
-        type:Number,
-        required:true
+    user:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required:true,
     },
     createdAt:{
-        type:Date,
-        required:true
+        type: Date,
+        default: Date.now(),
+        expires: '15m',
     },
     otp:{
         type:Number,
-        // check weather to add any expiry check here or not
+        required:true
     }
 })
+
+module.exports = mongoose.model('OTP', otpSchema);
