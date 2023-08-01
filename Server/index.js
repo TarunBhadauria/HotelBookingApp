@@ -2,9 +2,10 @@ const express = require('express');
 const app = express();
 
 //  Connection with Databse
-const connectDB = require('./configs/database');
-connectDB()
-
+const connectDB = require('./config/database');
+connectDB();
+// Import Cors
+const cors = require('cors')
 //  Importing Middlewares
 const cookieParser = require('cookie-parser');
 const fileUpload = require('express-fileupload');
