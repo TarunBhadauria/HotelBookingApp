@@ -1,21 +1,22 @@
 const mongoose = require('mongoose');
 
 const hotelSchema = new mongoose.Schema({
-    hotelName: {
+    name: {
         type: String,
         required: true
     },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "User",
+        required: true,
     },
     rooms: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Room"
+        ref: "Room",
     }],
-    ratingAndReview: [{
+    review: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "RatingAndReview"
+        ref: "Review",
     }],
     address: {
         type: String,
@@ -23,18 +24,25 @@ const hotelSchema = new mongoose.Schema({
     },
     city: {
         type: String,
-        required: true
+        required: true,
     },
-    images: [
-        {
-            type: String,
-        }
-    ],
+    imageURL: [{
+        type: String,
+    }],
     state: {
         type: String,
         required: true
-    }
+    },
+    pinCode: {
+        type: Number,
+        required: true,
+    },
+    landmark: {
+        type: String,
+    },
+    facilities: [{
+        type: String,
+    }]
 })
 
-
-module.exports = mongoose.Model("Hotel",hotelSchema);
+module.exports = mongoose.Model("Hotel", hotelSchema);

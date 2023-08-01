@@ -14,8 +14,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "server": "cd server && npm run dev",
-    "dev": "concurrently -n \"client,server\" -c \"bgBlue,bgYellow\" \"npm start\" \"npm run server\"",
+    "server": "cd ../Server && nodemon index.js",
+    "client": "npm start",
+    "dev": "concurrently -n \"client,server\" -c \"bgBlue,bgGreen\" \"npm run client\" \"npm run server\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

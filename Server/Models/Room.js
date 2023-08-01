@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const roomSchema = new mongoose.Schema({
-    roomName:{
+    roomTitle:{
         type:String,
         required:true
     },
@@ -10,13 +10,21 @@ const roomSchema = new mongoose.Schema({
         enum:["Single Bed", "Double Bed"],
         required:true
     },
+    numberOfBed: {
+        type: Number,
+        required: true,
+    },
     price:{
         type:Number,
         required:true
     },
-    isBooked:{
-        type:Boolean
-    }
+    numberOfRooms: {
+        type: Number,
+        required: true,
+    },
+    images: [{
+        type: String,
+    }]
 });
 
-module.exports = mongoose.Model("Room",roomSchema);
+module.exports = mongoose.Model("Room", roomSchema);
