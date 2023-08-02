@@ -25,3 +25,5 @@ const authN = (req, res, next) => {
         failed(res, err);
     }
 }
+
+module.exports = authN
