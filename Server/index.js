@@ -30,8 +30,20 @@ app.use(
 dotEnv.config();
 
 //  Importing routes
+const authRoute = require('./routes/auth')
+const hotelRoute = require('./routes/hotel')
+const paymentRoute = require('./routes/payment')
+const profileRoute = require('./routes/profile')
+const reviewRoute = require('./routes/review')
+const userRoute = require('./routes/user')
 
 //  Assigning Routes
+app.use('/api/v1/authenticate', authRoute)
+app.use('/api/v1/hotel', hotelRoute)
+app.use('/api/v1/payment', paymentRoute)
+app.use('/api/v1/profile', profileRoute)
+app.use('/api/v1/review', reviewRoute)
+app.use('/api/v1/user', userRoute)
 
 //  Health Check
 app.get('/', (req, res)=>{
@@ -43,5 +55,5 @@ app.get('/', (req, res)=>{
 
 //  Start Listening
 app.listen(4000, ()=>{
-    console.log('Server Started at port 4000');
+    console.log('Server Started at port 4000: http://localhost:4000');
 })
