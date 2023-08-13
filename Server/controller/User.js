@@ -101,14 +101,64 @@ exports.login = async(req, res)=>{
 }
 exports.changePassword = async(req, res)=>{
     try{
+        // Fetching
+        const { oldPassword, newPassword, confirmPassword }= req.body;
+        const userId = req.user.id;
 
+        // Validation
+        if(!oldPassword || !newPassword || !confirmPassword){
+            throw customError('All fields are required', 404);
+        }
+        if(newPassword !== confirmPassword){
+            throw customError('New Password and Confirm Password should be same', );
+        }
+        if(newPassword.length < 8){
+            throw customError('Password must be more than 8 characters');
+        }
+        const user = await  User.findById(userId).select('password');
+        if(user.password !== oldPassword){
+            throw customError('Old Password does not matched',);
+        }
+
+        // Perform Task
+        await   User.findByIdAndUpdate(userId, {password: newPassword});
+
+        // Send Response
+        res.status(200).json({
+            success: true,
+            message: 'Successfully updated the password',
+        })
     }catch(err){
         failed(res, err);
     }
 }
 exports.deleteUser = async(req, res)=>{
     try{
+        // Fetching Data
+        const userId = req.user.id;
+        const { password } = req.body;
 
+        // Validation
+        if(!password){
+            throw customError('Unable to get password', 404);
+        }
+        const user = await  User.findById(userId).select("password");
+        if(!user){
+            throw customError('Unable to find the User',);
+        }
+        if(user.password !== password){
+            throw customError("Unable to Verify User", );
+        }
+
+        // Perform Task
+        await   Profile.findByIdAndDelete(user.profile);
+        await   User.findByIdAndDelete(userId);
+
+        // Send Response
+        res.status(200).json({
+            success: true,
+            message: 'Account Delete successfully'
+        })
     }catch(err){
         failed(res, err);
     }
