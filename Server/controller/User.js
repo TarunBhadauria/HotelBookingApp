@@ -1,6 +1,7 @@
 const OTP = require("../models/OTP");
 const bcrypt = require('bcrypt')
 const { failed } = require("../utils/errorHandler");
+const User = require("../models/User");
 
 
 exports.signup = async(req, res)=>{
@@ -51,7 +52,49 @@ exports.signup = async(req, res)=>{
 }
 exports.login = async(req, res)=>{
     try{
+        // Fetching Data
+        const { email, password, deviceId } = req.body;
+    
+        // Validation
+        if(!email || !password || !deviceId){
+            throw customError('All fields are required', );
+        }
+        const user = await  User.findOne({email: email}).select('password');
+        if(!user){
+            throw customError('Unable to find the user',);
+        }
+        if(user.password !== password){
+            throw customError('Wrong Password, Try again later', );
+        }
 
+        // Perform Task
+        const payload = {
+            id: user._id,
+            email: user.email,
+            accountType: user.accountType,
+        }
+        const jwtToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, {expiresIn: '30d'});
+        const notify = await    Notification.create({
+            heading: "New Login",
+            message: `New LoggedIn with device: ${deviceId}`,
+        })
+        await   User.findByIdAndUpdate(user._id, {
+            $push: {
+                notifications: notify._id,
+            }
+        })
+        
+        // Send Response
+        res.cookie('token', jwtToken, {
+            expires: new Date(Date.now() + (30*24*60*60)),
+            httpOnly: true,
+            sameSite: 'none',
+            secure: true,
+        })
+        .status(200).json({
+            success: true,
+            message: 'Successfully Logged In',
+        })
     }catch(err){
         failed(res, err);
     }
