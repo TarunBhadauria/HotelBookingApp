@@ -1,6 +1,7 @@
 const OTP = require("../models/OTP");
 const bcrypt = require('bcrypt')
 const { failed } = require("../utils/errorHandler");
+const bcrypt = require("bcrypt")
 const User = require("../models/User");
 
 
@@ -60,7 +61,7 @@ exports.login = async(req, res)=>{
             throw customError('All fields are required', );
         }
         const user = await  User.findOne({email: email}).select('password');
-        if(!user){
+        if(await    bcrypt.compare(password, user.password)){
             throw customError('Unable to find the user',);
         }
         if(user.password !== password){
@@ -116,12 +117,13 @@ exports.changePassword = async(req, res)=>{
             throw customError('Password must be more than 8 characters');
         }
         const user = await  User.findById(userId).select('password');
-        if(user.password !== oldPassword){
+        if(await    bcrypt.compare(password, user.password)){
             throw customError('Old Password does not matched',);
         }
 
         // Perform Task
-        await   User.findByIdAndUpdate(userId, {password: newPassword});
+        const hashedPassword = await    bcrypt.hash(newPassword, 10);
+        await   User.findByIdAndUpdate(userId, {password: hashedPassword});
 
         // Send Response
         res.status(200).json({
