@@ -4,6 +4,7 @@ const { failed } = require("../utils/errorHandler");
 const User = require("../models/User");
 
 
+
 exports.signup = async(req, res)=>{
     try{
         // Fetching
