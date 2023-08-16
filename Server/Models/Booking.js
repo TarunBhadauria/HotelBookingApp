@@ -5,7 +5,7 @@ const bookingSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     },
-    totalPersona:{
+    totalPerson:{
         type:Number,
         required:true,
     },
