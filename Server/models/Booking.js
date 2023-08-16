@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const { mailSender } = require('../utils/mailHandler');
+const User = require('./User');
 
 const bookingSchema = new mongoose.Schema({
     user: {
@@ -32,5 +34,29 @@ const bookingSchema = new mongoose.Schema({
         required: true
     }
 });
+
+const sendConfirmationEmail = async(email, hotel, room, person, checkIn, checkOut, price)=>{
+    try{
+        const mailResponse = await  mailSender(
+            email, 
+            'Hotel Booked Successfully',
+            "Successfully Booked Hotel");
+    }catch(err){
+        console.log('Error while sending email: ', err.message);
+    }
+}
+
+bookingSchema.post("save", async()=>{
+    const userEmail = (await User.findById(this.user)).email;
+    sendConfirmationEmail(
+        userEmail, 
+        this.hotel, 
+        this.room, 
+        this.totalPerson, 
+        this.checkInDate,
+        this.checkOutDate,
+        this.totalPrice)
+})
+
 
 module.exports = mongoose.model("Booking",bookingSchema);
