@@ -19,25 +19,15 @@ exports.createBooking = async (req, res) => {
             user, totalPrice, totalPerson, hotel, room, checkInDate, checkOutDate
         })
 
-<<<<<<< HEAD
         await   newBooking.save();
 
         // Send Response
-        return res.status(200).json({
+        res.status(200).json({
             success: true,
             message: "Booking created successfully",
             response: newBooking
 
         });
-=======
-            //return response
-            return res.status(200).json({
-                success: true,
-                message: "Booking created successfully",
-                response: newBooking
-            });
-        }
->>>>>>> 6419d9f787cc05d814ad43fe6484c4d1916051e3
 
     } catch (err) {
         failed(res, err);
@@ -46,7 +36,6 @@ exports.createBooking = async (req, res) => {
 
 exports.getAllBookings = async (req, res) => {
 
-<<<<<<< HEAD
     //fetch userId from req.body  ------> (do we have to get all userdetails or Id is enough ? User ID is enough)
     // Acutally We don't need to fetch anything, It's already taken case in middleware.
     const userId = req.user.id;
@@ -71,37 +60,6 @@ exports.getAllBookings = async (req, res) => {
     //     });
     // }
         //if found return response 
-=======
-    //fetch userId from req.body  ------> (do we have to get all userdetails or userId is enough ?)
-    const { userId } = req.body;
-    //validate
-    if (!userId) {
-        return res.status(404).json({
-            success: false,
-            message: "Invalid User Id"
-        });
-    }
-    else {
-        const allBookings = await Booking.find({ user: userId });
-        //D is it nesessary
-        // allBookings.length > 0 ?
-        if (!allBookings) {
-            //if no bookings found return message
-            return res.status(404).json({
-                success: false,
-                message: "No Bookings found"
-            });
-        }
-        else {
-            //if found return response 
-            return res.status(200).json({
-                success: true,
-                message: "Bookings fetched successfully",
-                response: allBookings
-            })
-        }
-    }
->>>>>>> 6419d9f787cc05d814ad43fe6484c4d1916051e3
 
 
     return res.status(200).json({
@@ -221,7 +179,6 @@ exports.cancelBooking = async (req, res) => {
     try {
         // Fetch
         const { bookingId } = req.body;
-<<<<<<< HEAD
         const userId = req.user.id;
 
         // Validation
@@ -231,23 +188,6 @@ exports.cancelBooking = async (req, res) => {
         const booking = await   Booking.findById({ _Id: bookingId });
         if (!booking) {
             throw customError('Booking Not Found', 404);
-=======
-        //validation 
-        if(!bookingId){
-            return res.status(404).json({
-                success:false,
-                message:"Invalid Booking Id"
-            })
-        }
-        // check weather booking is present for given id 
-        const booking = await Booking.findById({ _Id: bookingId });
-        // if not then return response
-        if (!booking) {
-            return res.status(404).json({
-                success: false,
-                message: "Booking Not Found for given Id"
-            });
->>>>>>> 6419d9f787cc05d814ad43fe6484c4d1916051e3
         }
         if(booking.user !== userId){
             throw customError("This booking doesn't belongs to you");
