@@ -16,7 +16,7 @@ const notificationSchema = new      mongoose.Schema({
     },
     wasRead: {
         type: Boolean,
-        default: true,
+        default: false,
         required: true,
     }
 })

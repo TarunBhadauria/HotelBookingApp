@@ -1,7 +1,8 @@
+const User = require('../models/User');
 const {customError, failed} = require('../utils/errorHandler');
 const jwt = require('jsonwebtoken')
 
-const authN = (req, res, next) => {
+const authN = async(req, res, next) => {
     try{
         //  Fetch Token
         const token = req.cookie.token || req.header('Authorization')?.replace('Bearer ', '') || req.body.token;
@@ -17,6 +18,9 @@ const authN = (req, res, next) => {
             req.user = check;
         }catch(err){
             throw customError('Unable to verify token', 403);
+        }
+        if(!(await User.findById(req.user.id))){
+            throw customError('Unable to find User', 404);
         }
 
         //  Move Forwares
