@@ -26,7 +26,6 @@ exports.createBooking = async (req, res) => {
                 success: true,
                 message: "Booking created successfully",
                 response: newBooking
-
             });
         }
 
@@ -37,7 +36,7 @@ exports.createBooking = async (req, res) => {
 
 exports.getAllBookings = async (req, res) => {
 
-    //fetch userId from req.body  ------> (do we have to get all userdetails or Id is enough ?)
+    //fetch userId from req.body  ------> (do we have to get all userdetails or userId is enough ?)
     const { userId } = req.body;
     //validate
     if (!userId) {
@@ -49,6 +48,7 @@ exports.getAllBookings = async (req, res) => {
     else {
         const allBookings = await Booking.find({ user: userId });
         //D is it nesessary
+        // allBookings.length > 0 ?
         if (!allBookings) {
             //if no bookings found return message
             return res.status(404).json({
@@ -155,6 +155,13 @@ exports.cancelBooking = async (req, res) => {
     try {
         // fetch the booking id from req body 
         const { bookingId } = req.body;
+        //validation 
+        if(!bookingId){
+            return res.status(404).json({
+                success:false,
+                message:"Invalid Booking Id"
+            })
+        }
         // check weather booking is present for given id 
         const booking = await Booking.findById({ _Id: bookingId });
         // if not then return response
@@ -162,7 +169,7 @@ exports.cancelBooking = async (req, res) => {
             return res.status(404).json({
                 success: false,
                 message: "Booking Not Found for given Id"
-            })
+            });
         }
         //else find thebooking id and remove from database
         else {
