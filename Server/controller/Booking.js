@@ -5,6 +5,8 @@ const { failed, customError } = require("../utils/errorHandler")
 
 
 exports.createBooking = async (req, res) => {
+    // Approach is to check avilability by room count 
+    // roomcount===0 ? unable to book : book the hotel
     try {
         // Fetching
         const { user, totalPrice, totalPerson, hotel, checkInDate, checkOutDate, room } = req.body;
@@ -76,7 +78,7 @@ exports.createBooking = async (req, res) => {
         await newBooking.save();
 
         // Send Response
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: "Booking created successfully",
             response: newBooking
@@ -145,13 +147,14 @@ exports.updateBooking = async (req, res) => {
         if (booking.user !== userId) {
             throw customError("This Booking Doesn't belongs to you.");
         }
-        if (booking.checkOutDate > Date.now()) {
+        // 
+        if(booking.checkOutDate < Date.now()){ 
             throw customError('Cannot make changes in old booking');
         }
         if (!totalPerson && !room && !checkInDate && !checkOutDate) {
             throw customError('Atleast One Changes is required', 404);
         }
-        if (checkInDate && booking.checkInDate > Date.now()) {
+        if(checkInDate && booking.checkInDate < Date.now()){
             throw customError('Cannot Change CheckIn Date after it passed.');
         }
 
