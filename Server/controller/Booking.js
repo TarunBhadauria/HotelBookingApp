@@ -1,33 +1,33 @@
-const Booking = require("../Models/Booking");
-const { failed } = require("../utils/errorHandler")
+const Booking = require("../models/Booking");
+const { failed, customError } = require("../utils/errorHandler")
 
 
 exports.createBooking = async (req, res) => {
     try {
-        // fetch user ,totalPerson,hotel,checkInDate,checkOutDate,totalAmount from req.body
-
+        // Fetching
         const { user, totalPrice, totalPerson, hotel, checkInDate, checkOutDate, room } = req.body;
 
-        // validate the data
-
+        // Validation
         if (!user || !totalPrice || !hotel || !checkInDate || !checkOutDate || !totalPerson || !room) {
-            return res.status(404).json({
-                success: false,
-                message: "All fields are mandatory"
-            })
+            throw customError("All fields are mandatory", 404);
         }
+        // To Do (I'll do that tomorrow)
+        // const avaibleCheck = await  Booking.find({})
 
-        else {
-            // else insert booking data into db 
-            const newBooking = await Booking.create({ user, totalPrice, totalPerson, hotel, room, checkInDate, checkOutDate });
+        // Perform Task
+        const newBooking = new  Booking({
+            user, totalPrice, totalPerson, hotel, room, checkInDate, checkOutDate
+        })
 
-            //return response
-            return res.status(200).json({
-                success: true,
-                message: "Booking created successfully",
-                response: newBooking
-            });
-        }
+        await   newBooking.save();
+
+        // Send Response
+        res.status(200).json({
+            success: true,
+            message: "Booking created successfully",
+            response: newBooking
+
+        });
 
     } catch (err) {
         failed(res, err);
@@ -36,84 +36,104 @@ exports.createBooking = async (req, res) => {
 
 exports.getAllBookings = async (req, res) => {
 
-    //fetch userId from req.body  ------> (do we have to get all userdetails or userId is enough ?)
-    const { userId } = req.body;
-    //validate
-    if (!userId) {
-        return res.status(404).json({
-            success: false,
-            message: "Invalid User Id"
-        });
-    }
-    else {
-        const allBookings = await Booking.find({ user: userId });
-        //D is it nesessary
-        // allBookings.length > 0 ?
-        if (!allBookings) {
-            //if no bookings found return message
-            return res.status(404).json({
-                success: false,
-                message: "No Bookings found"
-            });
-        }
-        else {
-            //if found return response 
-            return res.status(200).json({
-                success: true,
-                message: "Bookings fetched successfully",
-                response: allBookings
-            })
-        }
-    }
+    //fetch userId from req.body  ------> (do we have to get all userdetails or Id is enough ? User ID is enough)
+    // Acutally We don't need to fetch anything, It's already taken case in middleware.
+    const userId = req.user.id;
+
+    //validate => No Validation is requires, (It's already taken care in middleware)
+    // if (!userId) {
+    //     return res.status(404).json({
+    //         success: false,
+    //         message: "Invalid User Id"
+    //     });
+    // }
+    const allBookings = await Booking.find({ user: userId });
+
+    //  Not required, we will take care of this thing in the frontend, if booking.length===0 show no booking found in UI.
+    // //D is it nesessary
+    // if (!allBookings) {
+    //     //if no bookings found return message
+    //     throw customError("No Boooking Found")
+    //     return res.status(404).json({
+    //         success: false,
+    //         message: "No Bookings found"
+    //     });
+    // }
+        //if found return response 
 
 
+    return res.status(200).json({
+        success: true,
+        message: "Bookings fetched successfully",
+        bookings: allBookings
+    })
 }
 
 exports.getBooking = async (req, res) => {
-    //fetch booking id from req.body
+    // Fetching
     const { bookingId } = req.body;
-    //validation
+    const userId = req.user.id;
+
+    // Validation
     if (!bookingId) {
-        return res.status(404).json({
-            success: false,
-            message: "Invalid booking Id"
-        });
+        throw customError('Booking not found', 404);
     }
-    // fetch booking details from db
-    const bookingData = await Booking.findById(bookingId)
-        .populate("User")
-        .populate("Hotel")
-        .populate("Room");
+    const booking = await   Booking.findById(bookingId).populate('Hotel').populate('Room');
+    if(!booking){
+        throw customError('Invalid Booking', 404);
+    }
+    if(booking.user !== userId){
+        throw customError("This Booking doesn't belongs to you");
+    }
+
     //return response 
-    return response.status(200).json({
+    res.status(200).json({
         success: true,
         message: "Booking fetched successfully",
-        response: bookingData
+        bookingData: booking
     });
 }
 
 exports.updateBooking = async (req, res) => {
     try {
-        // fetch data from req.body
-        const { bookingId, totalPerson, totalPrice, room, checkInDate, checkOutDate } = req.body;
-        //validation
-        if (!bookingId || !totalPerson || !totalPrice || !room || !checkInDate || !checkOutDate) {
-            return res.status(404).json({
-                success: false,
-                message: "All fields are mandatory"
-            })
+        // Fetching
+        const { bookingId, totalPerson, room, checkInDate, checkOutDate } = req.body;
+        const userId = req.user.id;
 
+        // Validation
+        if(!bookingId){
+            throw customError('No Booking is selected');
         }
-        else {
-            // update the data in database
-            const updatedBooking = await Booking.findByIdAndUpdate({bookingId}, { totalPerson, totalPrice, room, checkInDate, checkOutDate }, { new: true });
-            // return response 
-            return res.status(200).json({
-                success: true,
-                message: "Booking updated Successfully",
-                response: updatedBooking
-            })
+        const booking = await   Booking.findById(bookingId);
+        if(!booking){
+            throw customError('No Booking Found');
         }
+        if(booking.user !== userId){
+            throw customError("This Booking Doesn't belongs to you.");
+        }
+        if(booking.checkOutDate > Date.now()){
+            throw customError('Cannot make changes in old booking');
+        }
+        if (!totalPerson && !room && !checkInDate && !checkOutDate) {
+            throw customError('Atleast One Changes is required', 404);
+        }
+        if(checkInDate && booking.checkInDate > Date.now()){
+            throw customError('Cannot Change CheckIn Date after it passed.');
+        }
+
+        // Perform Task -   Updated Booking
+        const updatedBooking = await Booking.findByIdAndUpdate({bookingId},{
+            totalPerson: totalPerson ? totalPerson : booking.totalPerson,
+            room: room ? room : booking.room,
+            checkInDate: checkInDate ? checkInDate : booking.checkInDate,
+            checkOutDate: checkOutDate ? checkOutDate : booking.checkOutDate,
+        });
+
+        // return response 
+        res.status(200).json({
+            success: true,
+            message: "Booking Updated Successfully",
+        })
 
     } catch (err) {
         failed(res, err);
@@ -121,66 +141,70 @@ exports.updateBooking = async (req, res) => {
 }
 exports.extendBooking = async (req, res) => {
     try {
-        //  fetch checkIn and checkOut date from req.body
-        const { bookingId, checkInDate, checkOutDate } = req.body;
-        const bookingDetails = await Booking.findById({ _id: bookingId });
-        // validation
-        if (!bookingId || !checkInDate || !checkOutDate) {
-            return res.status(404).json({
-                success: false,
-                message: "All fields are mandatory"
-            });
+        // Fetch
+        const { bookingId, checkOutDate } = req.body;
+        const userId = req.user.id;
+
+        // Validation
+        if(!bookingId){
+            throw customError('No Booking selected');
         }
-        else if (!checkOutDate > bookingDetails.checkOutDate) {
-            return res.status(408).json({
-                success: false,
-                message: "please extend number of days"
-            })
+        const bookingData = await Booking.findById(bookingId);
+        if(!bookingData){
+            throw customError('Unable to find your booking', 404);
         }
-        else {
-            //else update the booking with given dates
-            const extendedBooking = await Booking.findByIdAndUpdate(bookingId, { checkInDate, checkOutDate }, { new: true });
-            // return response 
-            return res.staus(200).json({
-                success: true,
-                message: "Booking extended successfully",
-                response: extendedBooking
-            })
+        if(bookingData.user !== userId){
+            throw customError("This Booking doesn't belongs to you.");
         }
+        if (!checkOutDate) {
+            throw customError('All fields are mandatory', 404);
+        }
+        if (checkOutDate <= bookingData.checkOutDate) {
+            throw customError("Please extend the number of days", 408);
+        }
+
+        // Perform Task -   Extend Booking
+        await   Booking.findByIdAndUpdate(bookingId, { checkOutDate });
+
+        // return response 
+        res.staus(200).json({
+            success: true,
+            message: "Booking extended successfully",
+        })
     } catch (err) {
         failed(res, err);
     }
 }
 exports.cancelBooking = async (req, res) => {
     try {
-        // fetch the booking id from req body 
+        // Fetch
         const { bookingId } = req.body;
-        //validation 
+        const userId = req.user.id;
+
+        // Validation
         if(!bookingId){
-            return res.status(404).json({
-                success:false,
-                message:"Invalid Booking Id"
-            })
+            throw customError('No Booking is selected', 404);
         }
-        // check weather booking is present for given id 
-        const booking = await Booking.findById({ _Id: bookingId });
-        // if not then return response
+        const booking = await   Booking.findById({ _Id: bookingId });
         if (!booking) {
-            return res.status(404).json({
-                success: false,
-                message: "Booking Not Found for given Id"
-            });
+            throw customError('Booking Not Found', 404);
         }
-        //else find thebooking id and remove from database
-        else {
-            const cancelledBooking = await Booking.findByIdAndDelete({ _id: bookingId });
-            //return response
-            return res.status(200).json({
-                success: true,
-                message: "Booking cancelled Successfully",
-                response: cancelledBooking
-            })
+        if(booking.user !== userId){
+            throw customError("This booking doesn't belongs to you");
         }
+        if(booking.checkInDate >= Date.now()){
+            throw customError('Unable to cancel current booking');
+        }
+
+        // Perform Task -   Cancel the Booking
+        await   Booking.findByIdAndDelete(bookingId);
+
+        // Send Response
+        res.status(200).json({
+            success: true,
+            message: "Booking cancelled Successfully",
+        })
+    
     } catch (err) {
         failed(res, err);
     }
