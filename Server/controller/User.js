@@ -19,7 +19,7 @@ exports.signup = async(req, res)=>{
         }
         const alreadyExist = await  User.findOne({email: email});
         if(alreadyExist){
-            throw customError('User Already Exist with password: ', alreadyExist.password);
+            throw customError('User Already Exist');
         }
         const recentOtp = await OTP.find({email}).sort({ createdAt: -1 }).limit(1);
         if(!recentOtp || !recentOtp[0] || recentOtp[0].otp != otp){

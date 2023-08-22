@@ -9,11 +9,12 @@ exports.createBooking = async (req, res) => {
     // roomcount===0 ? unable to book : book the hotel
     try {
         // Fetching
-        const { user, totalPrice, totalPerson, hotel, checkInDate, checkOutDate, room } = req.body;
+        const userId = req.user.id;
+        const { totalPrice, totalPerson, hotel, requestedInDate, requestedOutDate, room } = req.body;
 
         // Validation
-        if (!user || !totalPrice || !hotel || !checkInDate || !checkOutDate || !totalPerson || !room) {
-            throw customError("All fields are mandatory", 404);
+        if (!totalPrice || !hotel || !requestedInDate || !requestedOutDate || !totalPerson || !room) {
+            throw customError("All fields are mandatory", 402);
         }
         // Availibility Check
 
@@ -43,20 +44,20 @@ exports.createBooking = async (req, res) => {
                 {
                     $or: [
                         {
-                            checkInDate: { $lt: checkInDate }, 
-                            checkOutDate: { $gt: checkInDate }
+                            checkInDate: { $lt: requestedInDate }, 
+                            checkOutDate: { $gt: requestedInDate }
                         },
                         {
-                            checkInDate: { $lt: checkOutDate }, 
-                            checkOutDate: { $gt: checkOutDate }
+                            checkInDate: { $lt: requestedOutDate }, 
+                            checkOutDate: { $gt: requestedOutDate }
                         },
                         {
-                            checkInDate: { $lte: checkInDate },
-                            checkOutDate: { $gte: checkOutDate }
+                            checkInDate: { $lte: requestedInDate },
+                            checkOutDate: { $gte: requestedOutDate }
                         },
                         {
-                            checkInDate: { $gt: checkInDate },
-                            checkOutDate: { $lt: checkOutDate }
+                            checkInDate: { $gte: requestedInDate },
+                            checkOutDate: { $lte: requestedOutDate }
                         },
                     ]
                 }
@@ -66,13 +67,13 @@ exports.createBooking = async (req, res) => {
 
         const totalRooms = (await Room.findById(room)).numberOfRooms;
 
-        if(totalBooking == totalRooms){
+        if(totalBooking.length >= totalRooms){
             throw customError('Rooms are not available');
         }
 
         // Perform Task
         const newBooking = new Booking({
-            user, totalPrice, totalPerson, hotel, room, checkInDate, checkOutDate
+            userId, totalPrice, totalPerson, hotel, room, checkInDate, checkOutDate
         })
 
         await newBooking.save();
