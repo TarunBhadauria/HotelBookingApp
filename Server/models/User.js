@@ -32,12 +32,13 @@ const userSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"Hotel"
     }],
-    resetPasswordToken:{
-        type:Date   
-    },
     profile:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Profile"
+    },
+    approved:{
+        type: Boolean,
+        default: false,
     }
 })
 
