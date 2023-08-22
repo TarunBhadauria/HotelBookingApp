@@ -1,4 +1,6 @@
 const Booking = require("../models/Booking");
+const Hotel = require("../models/Hotel");
+const Room = require("../models/Room");
 const { failed, customError } = require("../utils/errorHandler")
 
 
@@ -13,15 +15,67 @@ exports.createBooking = async (req, res) => {
         if (!user || !totalPrice || !hotel || !checkInDate || !checkOutDate || !totalPerson || !room) {
             throw customError("All fields are mandatory", 404);
         }
-        // To Do (I'll do that tomorrow)
-        // const avaibleCheck = await  Booking.find({})
+        // Availibility Check
+
+        /*Logic
+            For Example you wan to book from 4 to 7 dates
+            
+            Case 1: That room already book 2 to 5 => BookingIn <= RequestedIn <= BookingOut
+            Case 2: That room already book 6 to 9 => BookingIn <= RequestedOut <= bookingOut
+            Case 3  That room already book 3 to 8 => BookingIn <= RequestedIn && RequestedOut <= BookingOut
+            Case 4  That room already book 5 to 6 => RequestedIn <= BookingIn && BookingOut <= RequestedOut
+
+            These are the all intersections segments.
+            Now We already have numbers of rooms in that hotel, 
+            So we just need to check if numberOfTotalRooms <= TotalBooking (No Rooms left)
+
+            Why this is better,
+            We can later implement the suggestion if all this types of room is occupied, 
+            we can let him know the nearest free date.
+        */
+        
+
+
+        const totalBooking = await Booking.find({
+            $and: [
+                { hotel: hotel },
+                { room: room },
+                {
+                    $or: [
+                        {
+                            checkInDate: { $lt: checkInDate }, 
+                            checkOutDate: { $gt: checkInDate }
+                        },
+                        {
+                            checkInDate: { $lt: checkOutDate }, 
+                            checkOutDate: { $gt: checkOutDate }
+                        },
+                        {
+                            checkInDate: { $lte: checkInDate },
+                            checkOutDate: { $gte: checkOutDate }
+                        },
+                        {
+                            checkInDate: { $gt: checkInDate },
+                            checkOutDate: { $lt: checkOutDate }
+                        },
+                    ]
+                }
+            ]
+        })
+
+
+        const totalRooms = (await Room.findById(room)).numberOfRooms;
+
+        if(totalBooking == totalRooms){
+            throw customError('Rooms are not available');
+        }
 
         // Perform Task
-        const newBooking = new  Booking({
+        const newBooking = new Booking({
             user, totalPrice, totalPerson, hotel, room, checkInDate, checkOutDate
         })
 
-        await   newBooking.save();
+        await newBooking.save();
 
         // Send Response
         return res.status(200).json({
@@ -37,33 +91,13 @@ exports.createBooking = async (req, res) => {
 }
 
 exports.getAllBookings = async (req, res) => {
-
-    //fetch userId from req.body  ------> (do we have to get all userdetails or Id is enough ? User ID is enough)
-    // Acutally We don't need to fetch anything, It's already taken case in middleware.
+    // Fetching
     const userId = req.user.id;
 
-    //validate => No Validation is requires, (It's already taken care in middleware)
-    // if (!userId) {
-    //     return res.status(404).json({
-    //         success: false,
-    //         message: "Invalid User Id"
-    //     });
-    // }
+    //  Perform Task
     const allBookings = await Booking.find({ user: userId });
 
-    //  Not required, we will take care of this thing in the frontend, if booking.length===0 show no booking found in UI.
-    // //D is it nesessary
-    // if (!allBookings) {
-    //     //if no bookings found return message
-    //     throw customError("No Boooking Found")
-    //     return res.status(404).json({
-    //         success: false,
-    //         message: "No Bookings found"
-    //     });
-    // }
-        //if found return response 
-
-
+    //  Send Response
     return res.status(200).json({
         success: true,
         message: "Bookings fetched successfully",
@@ -80,11 +114,11 @@ exports.getBooking = async (req, res) => {
     if (!bookingId) {
         throw customError('Booking not found', 404);
     }
-    const booking = await   Booking.findById(bookingId).populate('Hotel').populate('Room');
-    if(!booking){
+    const booking = await Booking.findById(bookingId).populate('Hotel').populate('Room');
+    if (!booking) {
         throw customError('Invalid Booking', 404);
     }
-    if(booking.user !== userId){
+    if (booking.user !== userId) {
         throw customError("This Booking doesn't belongs to you");
     }
 
@@ -103,14 +137,14 @@ exports.updateBooking = async (req, res) => {
         const userId = req.user.id;
 
         // Validation
-        if(!bookingId){
+        if (!bookingId) {
             throw customError('No Booking is selected');
         }
-        const booking = await   Booking.findById(bookingId);
-        if(!booking){
+        const booking = await Booking.findById(bookingId);
+        if (!booking) {
             throw customError('No Booking Found');
         }
-        if(booking.user !== userId){
+        if (booking.user !== userId) {
             throw customError("This Booking Doesn't belongs to you.");
         }
         // 
@@ -125,7 +159,7 @@ exports.updateBooking = async (req, res) => {
         }
 
         // Perform Task -   Updated Booking
-        const updatedBooking = await Booking.findByIdAndUpdate({bookingId},{
+        const updatedBooking = await Booking.findByIdAndUpdate({ bookingId }, {
             totalPerson: totalPerson ? totalPerson : booking.totalPerson,
             room: room ? room : booking.room,
             checkInDate: checkInDate ? checkInDate : booking.checkInDate,
@@ -149,14 +183,14 @@ exports.extendBooking = async (req, res) => {
         const userId = req.user.id;
 
         // Validation
-        if(!bookingId){
+        if (!bookingId) {
             throw customError('No Booking selected');
         }
         const bookingData = await Booking.findById(bookingId);
-        if(!bookingData){
+        if (!bookingData) {
             throw customError('Unable to find your booking', 404);
         }
-        if(bookingData.user !== userId){
+        if (bookingData.user !== userId) {
             throw customError("This Booking doesn't belongs to you.");
         }
         if (!checkOutDate) {
@@ -167,7 +201,7 @@ exports.extendBooking = async (req, res) => {
         }
 
         // Perform Task -   Extend Booking
-        await   Booking.findByIdAndUpdate(bookingId, { checkOutDate });
+        await Booking.findByIdAndUpdate(bookingId, { checkOutDate });
 
         // return response 
         res.staus(200).json({
@@ -185,29 +219,29 @@ exports.cancelBooking = async (req, res) => {
         const userId = req.user.id;
 
         // Validation
-        if(!bookingId){
+        if (!bookingId) {
             throw customError('No Booking is selected', 404);
         }
-        const booking = await   Booking.findById({ _Id: bookingId });
+        const booking = await Booking.findById({ _Id: bookingId });
         if (!booking) {
             throw customError('Booking Not Found', 404);
         }
-        if(booking.user !== userId){
+        if (booking.user !== userId) {
             throw customError("This booking doesn't belongs to you");
         }
-        if(booking.checkInDate <= Date.now()){
+        if (booking.checkInDate <= Date.now()) {
             throw customError('Unable to cancel current booking');
         }
 
         // Perform Task -   Cancel the Booking
-        await   Booking.findByIdAndDelete(bookingId);
+        await Booking.findByIdAndDelete(bookingId);
 
         // Send Response
         res.status(200).json({
             success: true,
             message: "Booking cancelled Successfully",
         })
-    
+
     } catch (err) {
         failed(res, err);
     }
