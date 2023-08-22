@@ -14,7 +14,7 @@ const hotelSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Room",
     }],
-    review: [{
+    reviews: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Review",
     }],
