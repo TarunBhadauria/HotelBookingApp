@@ -121,7 +121,7 @@ exports.updateHotel = async (req, res) => {
         //   Fetching
         const userId = req.user.id;
         const hotelImage = req.files.hotelImage;
-        const { hotelId, name, address, city, imageUrl, pincode, landmark, facilities } = req.body;
+        const { hotelId, name, address, city, imageUrls, pincode, landmark, facilities } = req.body;
 
         // Validation  
         if (!hotelId) {
@@ -137,21 +137,48 @@ exports.updateHotel = async (req, res) => {
 
         //  Perform Task
         //  If image sent, delete that image
-        if(imageUrl){
-            await   Hotel.findByIdAndUpdate(hotelId, {
-                $pull: {
-                    imageURL: imageUrl,
-                }
+        // if (imageUrl) {
+        //     await Hotel.findByIdAndUpdate(hotelId, {
+        //         $pull: {
+        //             imageURL: imageUrl,
+        //         }
+        //     })
+        // }
+
+        if(imageUrls.length>0){
+            imageUrls.forEach(async (url)=>{
+                await Hotel.findByIdAndUpdate(hotelId,
+                    {
+                        $pull:{
+                            imageURL:url
+                        }
+                    })
             })
         }
+        
+
+        
+
         //  If file sent
-        if(hotelImage.length !== 0 ){
-            const upload = await uploadToCloudinary(hotelImage);
-            await   Hotel.findByIdAndUpdate(hotelId, {
-                $push: {
-                    imageURL: upload.secure_url,
-                }
-            })
+        // if(hotelImage.length !== 0 ){
+        //     const upload = await uploadToCloudinary(hotelImage);
+        //     await   Hotel.findByIdAndUpdate(hotelId, {
+        //         $push: {
+        //             imageURL: upload.secure_url,
+        //         }
+        //     })
+        // }
+
+        if (hotelImage.length > 0) {
+            hotelImage.forEach(async (image) => {
+                const upload = await uploadToCloudinary(image, 'hotelImage');
+                await Hotel.findByIdAndUpdate(hotelId, {
+                    $push: {
+                        imageURL: upload.secure_url,
+                    }
+                })
+            });
+
         }
 
         //   Updating data in database
@@ -168,6 +195,7 @@ exports.updateHotel = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: "Hotel details updated successfully",
+            response:updatedHotel
         });
     } catch (err) {
         failed(res, err);
@@ -193,11 +221,11 @@ exports.deleteHotel = async (req, res) => {
 
         //  Perform Task
         //  Delete entry from database
-        hotel.rooms.forEach(async(room)=>{
-            await   Room.findByIdAndDelete(room);
+        hotel.rooms.forEach(async (room) => {
+            await Room.findByIdAndDelete(room);
         })
-        hotel.reviews.forEach(async(review)=>{
-            await   Review.findByIdAndDelete(review);
+        hotel.reviews.forEach(async (review) => {
+            await Review.findByIdAndDelete(review);
         })
         await Hotel.findByIdAndDelete({ _id: hotelId });
 
