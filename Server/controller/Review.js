@@ -4,7 +4,7 @@ const User = require("../models/User");
 const { failed, customError } = require("../utils/errorHandler");
 
 
-exports.createReview = async (req, res) => {
+exports.createRating = async (req, res) => {
     try {
         // Fetching
         const userId = req.user.id;
@@ -46,7 +46,7 @@ exports.createReview = async (req, res) => {
     }
 }
 
-exports.updateReview = async (req, res) => {
+exports.updateRating = async (req, res) => {
     try {
         //  Fetching
         const userId = req.user.id;
@@ -88,7 +88,7 @@ exports.updateReview = async (req, res) => {
         failed(res, err);
     }
 }
-exports.deleteReview = async (req, res) => {
+exports.deleteRating = async (req, res) => {
     try {
         // Fetching
         const userId = req.user.id;
@@ -124,7 +124,7 @@ exports.deleteReview = async (req, res) => {
         failed(res, err);
     }
 }
-exports.getAllReviews = async (req, res) => {
+exports.getAllRating = async (req, res) => {
     try {
         //    Fetching 
         const { hotelId } = req.body;
