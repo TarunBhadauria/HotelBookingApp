@@ -13,7 +13,7 @@ exports.addRoom = async(req, res)=>{
         const { title, type, beds, price, rooms, hotelId } = req.body;
 
         // Validation
-        if(!title || !type || !beds || price || rooms || hotelId || images.length === 0){
+        if(!title || !type || !beds || ! price || ! rooms || ! hotelId || images.length === 0){
             throw customError("All fields are required", 404);
         }
         const hotel = await     Hotel.findById(hotelId);
