@@ -8,7 +8,7 @@ const authN = require('../middlewares/authN');
 const { verifyEmail, sendOTP, resetPassword, resetPasswordToken } = require('../controller/Auth');
 
 //  Assigning Routes to controllers and middlewares
-router.post('/verifyEmail', verifyEmail);
+router.post('/verifyEmail', authN, verifyEmail);
 router.post('/sendOTP', sendOTP);
 router.post('/resetPassword', resetPassword);
 router.post('/resetPasswordToken', resetPasswordToken);
