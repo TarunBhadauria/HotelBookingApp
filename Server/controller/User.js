@@ -1,7 +1,7 @@
 const OTP = require("../models/OTP");
 const bcrypt = require('bcrypt')
 const { failed } = require("../utils/errorHandler");
-const bcrypt = require("bcrypt")
+// const bcrypt = require("bcrypt")
 const User = require("../models/User");
 
 
