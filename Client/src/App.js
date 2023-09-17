@@ -1,10 +1,11 @@
 import logo from './logo.svg';
 import './App.css';
+import Navbar from './Components/Common/Navbar';
 
 function App() {
   return (
-    <div className="font-bold text-3xl text-center">
-     <h1>Welcome</h1>
+    <div className='h-full w-full bg-[#ffffff]'>
+     <Navbar/>
     </div>
   );
 }
