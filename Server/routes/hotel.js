@@ -6,7 +6,7 @@ const authN = require('../middlewares/authN');
 const { isOwner, isUser } = require('../middlewares/authZ');
 
 //  Importing Controllers
-const { createHotel, updateHotel, deleteHotel, reportHotel, getAllHotels, getFamousHotels, getFilteredHotels, getHotelDetails } = require('../controller/hotel');
+const { createHotel, updateHotel, deleteHotel, reportHotel, getAllHotels, getFamousHotels, getFilteredHotels, getHotelDetails } = require('../controller/Hotel');
 const { addRoom, updateRoom, removeRoom } = require('../controller/Room');
 const { createBooking, updateBooking, extendBooking, cancelBooking } = require('../controller/Booking');
 
