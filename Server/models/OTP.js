@@ -20,8 +20,8 @@ const otpSchema = new mongoose.Schema({
     }
 })
 
-otpSchema.post('save', async(data)=>{
-    mailSender(data.email, 'Verification Email', verificationMail(`${data.firstName} ${data.lastName}`, this.otp));
+otpSchema.post('save', async(curr)=>{
+    mailSender(curr.email, 'Suitscape Verification', verificationMail(`${curr.firstName} ${curr.lastName}`, curr.otp));
 })
 
 module.exports = mongoose.model('OTP', otpSchema);
