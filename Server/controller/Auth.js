@@ -4,6 +4,7 @@ const ResetPasswordToken = require("../models/ResetPasswordToken");
 const User = require("../models/User");
 const { failed, customError } = require("../utils/errorHandler");
 const { mailSender } = require("../utils/mailHandler");
+require('dotenv').config();
 
 
 exports.verifyEmail = async(req, res)=>{
@@ -42,8 +43,12 @@ exports.sendOTP = async(req, res)=>{
         const user = await User.findById(userId);
         const alreadyGenerated = await  OTP.find({user:userId});
 
+        console.log(process.env.NODEMAILER_USERNAME)
+        console.log(process.env.NODEMAILER_PASSWORD)
+
         if(alreadyGenerated.length !==0){
-            mailSender(userEmail, 'Suitscape Verification', verificationMail(`${user.firstName} ${user.lastName}`, alreadyGenerated.otp));
+            // mailSender(user.email, 'Suitscape Verification', verificationMail(`${user.firstName} ${user.lastName}`, alreadyGenerated.otp));
+            mailSender(user.email, 'Suitscape Verification', `${user.firstName} ${user.lastName} ${alreadyGenerated.otp}`);
             throw customError('Again, OTP Sent successfully', 200);
         }
 
@@ -59,7 +64,7 @@ exports.sendOTP = async(req, res)=>{
 
         // Send Response
         res.status(200).json({
-            success: false,
+            success: true,
             message: "OTP sent successfully",
         })
     }catch(err){
