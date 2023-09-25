@@ -1,17 +1,19 @@
 const OTP = require("../models/OTP");
 const bcrypt = require('bcrypt')
-const { failed } = require("../utils/errorHandler");
-const bcrypt = require("bcrypt")
+const { customError, failed } = require("../utils/errorHandler");
+const Profile = require('../models/Profile');
 const User = require("../models/User");
+const jwt = require('jsonwebtoken');
+const Notification = require('../models/Notification')
 
 
 exports.signup = async(req, res)=>{
     try{
         // Fetching
-        const { email, password, firstName, lastName, accountType, otp } = req.body;
+        const { email, password, firstName, lastName, accountType } = req.body;
 
         // Validation
-        if(!email || !password || !firstName || !lastName || !accountType || !otp){
+        if(!email || !password || !firstName || !lastName || !accountType){
             throw customError('All fields are required');
         }
         if(password.length < 8){
@@ -21,10 +23,10 @@ exports.signup = async(req, res)=>{
         if(alreadyExist){
             throw customError('User Already Exist');
         }
-        const recentOtp = await OTP.find({email}).sort({ createdAt: -1 }).limit(1);
-        if(!recentOtp || !recentOtp[0] || recentOtp[0].otp != otp){
-            throw customError('OTP does not matched', 400);
-        }
+        // const recentOtp = await OTP.find({email}).sort({ createdAt: -1 }).limit(1);
+        // if(!recentOtp || !recentOtp[0] || recentOtp[0].otp != otp){
+        //     throw customError('OTP does not matched', 400);
+        // }
 
         // Perform Task
         const hashPassword = await  bcrypt.hash(password, 10);
@@ -61,11 +63,12 @@ exports.login = async(req, res)=>{
             throw customError('All fields are required', );
         }
         const user = await  User.findOne({email: email}).select('password');
-        if(await    bcrypt.compare(password, user.password)){
-            throw customError('Unable to find the user',);
+        if(!user){
+            throw customError('Unable to find the user')
         }
-        if(user.password !== password){
-            throw customError('Wrong Password, Try again later', );
+        const matched= await    bcrypt.compare(password, user.password);
+        if(!matched){
+            throw customError('Wrong Password, Try again later',);
         }
 
         // Perform Task
@@ -116,12 +119,13 @@ exports.changePassword = async(req, res)=>{
         if(newPassword.length < 8){
             throw customError('Password must be more than 8 characters');
         }
-        const user = await  User.findById(userId).select('password');
-        if(await    bcrypt.compare(password, user.password)){
+        const user = await  User.findById(userId).select('password userId');
+        if(!(await    bcrypt.compare(oldPassword, user.password))){
             throw customError('Old Password does not matched',);
         }
 
         // Perform Task
+        console.log(user);
         const hashedPassword = await    bcrypt.hash(newPassword, 10);
         await   User.findByIdAndUpdate(userId, {password: hashedPassword});
 
@@ -144,11 +148,11 @@ exports.deleteUser = async(req, res)=>{
         if(!password){
             throw customError('Unable to get password', 404);
         }
-        const user = await  User.findById(userId).select("password");
+        const user = await  User.findById(userId).select("password profile");
         if(!user){
             throw customError('Unable to find the User',);
         }
-        if(user.password !== password){
+        if(!(await    bcrypt.compare(password, user.password))){
             throw customError("Unable to Verify User", );
         }
 

@@ -240,7 +240,7 @@ exports.deleteHotel = async (req, res) => {
 }
 exports.reportHotel = async (req, res) => {
     try {
-
+           
     } catch (err) {
         failed(res, err);
     }

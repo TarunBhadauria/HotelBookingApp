@@ -4,6 +4,7 @@ const ResetPasswordToken = require("../models/ResetPasswordToken");
 const User = require("../models/User");
 const { failed, customError } = require("../utils/errorHandler");
 const { mailSender } = require("../utils/mailHandler");
+require('dotenv').config();
 
 
 exports.verifyEmail = async(req, res)=>{
@@ -13,16 +14,21 @@ exports.verifyEmail = async(req, res)=>{
         const { otp } = req.body;
 
         // Validation
+        const user = await  User.findById(userId);
+        if(user.approved){
+            throw customError('User Already Verified', 401);
+        }
         const fetchOTP = await OTP.findOne({user: userId});
         if(!fetchOTP){
             throw customError('Invalid OTP', 404);
         }
-        if(fetchOTP.otp !== otp){
+        if(fetchOTP.otp !== parseInt(otp)){
             throw customError('OTP mismatched', 401);
         }
 
         // Perform task
         await   User.findByIdAndUpdate(userId, {approved: true});
+        await   OTP.findByIdAndDelete(fetchOTP._id);
 
         // Send Response
         res.status(200).json({
@@ -43,7 +49,8 @@ exports.sendOTP = async(req, res)=>{
         const alreadyGenerated = await  OTP.find({user:userId});
 
         if(alreadyGenerated.length !==0){
-            mailSender(userEmail, 'Suitscape Verification', verificationMail(`${user.firstName} ${user.lastName}`, alreadyGenerated.otp));
+            mailSender(user.email, 'Suitscape Verification', verificationMail(`${user.firstName} ${user.lastName}`, alreadyGenerated[0].otp));
+            // mailSender(user.email, 'Suitscape Verification', `${user.firstName} ${user.lastName} ${alreadyGenerated.otp}`);
             throw customError('Again, OTP Sent successfully', 200);
         }
 
@@ -55,11 +62,16 @@ exports.sendOTP = async(req, res)=>{
         })
 
         // Played a little gamble here (If it works, we will learn something new);
-        await   createOTP.save({email: user.email, firstName: user.firstName, lastName: user.lastName});
+        createOTP.email = user.email;
+        createOTP.firstName = user.firstName;
+        createOTP.lastName = user.lastName;
+        createOTP.save();
+
+        // await   createOTP.save({email: user.email, firstName: user.firstName, lastName: user.lastName});
 
         // Send Response
         res.status(200).json({
-            success: false,
+            success: true,
             message: "OTP sent successfully",
         })
     }catch(err){
@@ -120,7 +132,10 @@ exports.resetPasswordToken = async(req, res)=>{
         })
 
         // Played a gamble here
-        await   generateRPT.save({email:searchUser.email, firstName: searchUser.firstName, lastName: searchUser.lastName});
+        generateRPT.email = searchUser.email,
+        generateRPT.firstName = searchUser.firstName,
+        generateRPT.lastName = searchUser.lastName,
+        await   generateRPT.save();
 
         // Send Response
         res.status(200).json({
