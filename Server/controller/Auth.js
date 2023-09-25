@@ -6,6 +6,7 @@ const { failed, customError } = require("../utils/errorHandler");
 const { mailSender } = require("../utils/mailHandler");
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
+const Profile = require("../models/Profile");
 require('dotenv').config();
 
 
@@ -101,7 +102,16 @@ exports.resetPassword = async(req, res)=>{
         // Perform Task
         await   ResetPasswordToken.findByIdAndDelete(rptToken._id);
         const hashedPassword = await    bcrypt.hash(password, 10);
-        await   User.findByIdAndUpdate(userId, {password: hashedPassword});
+        const updatedUser = await   User.findByIdAndUpdate(userId, {password: hashedPassword});
+        const sendNotification = await    Notification.create({
+            heading: 'Password Changed',
+            message: `Last Password change at ${Date.now()}`,
+        });
+        await   Profile.findByIdAndUpdate(updatedUser.profile, {
+            $push: {
+                notifications: sendNotification._id,
+            }
+        })
 
         // Send Response
         res.status(200).json({

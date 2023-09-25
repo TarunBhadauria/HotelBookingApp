@@ -62,7 +62,7 @@ exports.login = async(req, res)=>{
         if(!email || !password || !deviceId){
             throw customError('All fields are required', );
         }
-        const user = await  User.findOne({email: email}).select('password');
+        const user = await  User.findOne({email: email}).select('password profile email accountType');
         if(!user){
             throw customError('Unable to find the user')
         }
@@ -77,12 +77,13 @@ exports.login = async(req, res)=>{
             email: user.email,
             accountType: user.accountType,
         }
+        console.log(payload);
         const jwtToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, {expiresIn: '30d'});
         const notify = await    Notification.create({
             heading: "New Login",
             message: `New LoggedIn with device: ${deviceId}`,
         })
-        await   User.findByIdAndUpdate(user._id, {
+        await   Profile.findByIdAndUpdate(user.profile, {
             $push: {
                 notifications: notify._id,
             }
@@ -119,7 +120,7 @@ exports.changePassword = async(req, res)=>{
         if(newPassword.length < 8){
             throw customError('Password must be more than 8 characters');
         }
-        const user = await  User.findById(userId).select('password userId');
+        const user = await  User.findById(userId).select('password userId profile');
         if(!(await    bcrypt.compare(oldPassword, user.password))){
             throw customError('Old Password does not matched',);
         }
@@ -128,6 +129,15 @@ exports.changePassword = async(req, res)=>{
         console.log(user);
         const hashedPassword = await    bcrypt.hash(newPassword, 10);
         await   User.findByIdAndUpdate(userId, {password: hashedPassword});
+        const notify = await    Notification.create({
+            heading: "Password Changed Successfully",
+            message: `Your last password changed at ${Date.now()}`
+        })
+        await   Profile.findByIdAndUpdate(user.profile, {
+            $push: {
+                notifications: notify,
+            }
+        })
 
         // Send Response
         res.status(200).json({

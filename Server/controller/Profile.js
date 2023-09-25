@@ -21,7 +21,7 @@ exports.updateUserDetails = async(req, res)=>{
         const user = await  User.findById(userId);
         const profile = await   Profile.findById(user.profile);
         const updatedProfile = await    Profile.findByIdAndUpdate(user.profile, {
-            dateOfBirth : dob ? dob: profile.id,
+            dateOfBirth : dob ? dob: profile.dob,
             gender :gender ? gender : profile.gender,
             phoneNumber : phoneNumber ? phoneNumber : profile.phoneNumber,
             bio : bio ? bio : profile.bio,

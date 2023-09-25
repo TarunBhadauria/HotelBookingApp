@@ -27,6 +27,7 @@ const isOwner = (req, res, next)=>{
 const isUser = (req, res, next)=>{
     try{
         // Fetch account type
+        console.log(req.user);
         const { accountType } = req.user;
 
         // Validate Account type
