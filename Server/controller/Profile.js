@@ -117,7 +117,7 @@ exports.getNotifications = async(req, res)=>{
             notification = await     Notification.findById(notificationId);
         }else{
             const profileId = (await   User.findById(userId)).profile;
-            notification = (await     Profile.findById(profileId).populate('Notifications')).notifications;
+            notification = (await     Profile.findById(profileId).populate('notifications')).notifications;
         }
 
         // Send Response

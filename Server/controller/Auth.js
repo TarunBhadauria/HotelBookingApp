@@ -4,6 +4,8 @@ const ResetPasswordToken = require("../models/ResetPasswordToken");
 const User = require("../models/User");
 const { failed, customError } = require("../utils/errorHandler");
 const { mailSender } = require("../utils/mailHandler");
+const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 require('dotenv').config();
 
 
@@ -97,7 +99,9 @@ exports.resetPassword = async(req, res)=>{
         }
         
         // Perform Task
-        await   User.findByIdAndUpdate(userId, {password: password});
+        await   ResetPasswordToken.findByIdAndDelete(rptToken._id);
+        const hashedPassword = await    bcrypt.hash(password, 10);
+        await   User.findByIdAndUpdate(userId, {password: hashedPassword});
 
         // Send Response
         res.status(200).json({
