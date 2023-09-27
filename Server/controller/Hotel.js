@@ -79,11 +79,11 @@ exports.createHotel = async (req, res) => {
         // Fetching
         const userId = req.user.id;
         const { hotelImages } = req.files;
-
         const { name, address, city, state, pinCode, landmark, facilities } = req.body;
 
+
         // Validation
-        if (hotelImages.length === 0) {
+        if (!hotelImages || hotelImages.length === 0) {
             throw customError("Atleast one hotel image is required", 404);
         }
         if (!name || !address || !city || !state || !pinCode || !landmark || !facilities) {
@@ -93,25 +93,37 @@ exports.createHotel = async (req, res) => {
         // Perform Task
         // Insert Data into database
         const newHotel = new Hotel({
-            name, owner: userId, address, city, state, pinCode, landmark, facilities
+            name, owner: userId, address, city, state, pinCode: parseInt(pinCode), landmark, facilities
         });
 
         // Upload Image to cloudinary
-        hotelImages.forEach(async (image) => {
+        // This didn't work because forEach is an async in nature.
+        // hotelImages.forEach(async (image) => {
+        //     const upload = await uploadToCloudinary(image, 'hotelImage');
+        //     newHotel.imageURL.push(upload.secure_url);
+        // });
+
+        const uploadPromises = hotelImages.map(async (image) => {
             const upload = await uploadToCloudinary(image, 'hotelImage');
-            newHotel.imageURL.push(upload.secure_url);
+            return upload.secure_url;
         });
 
+        Promise.all(uploadPromises).then((imageURLs) => {
+            newHotel.imageURL = imageURLs;
+            return newHotel.save();
+        }).then(async(savedHotel) => { 
+            await savedHotel.save();
 
-        await newHotel.save();
-
-        // return response 
-        res.status(200).json({
-            success: true,
-            message: "Hotel created Successfully",
-            response: newHotel
+            // return response 
+            res.status(200).json({
+                success: true,
+                message: "Hotel created Successfully",
+                response: newHotel
+            })
+        }).catch((err)=>{
+            const errorr = customError(err);
+            return failed(res, errorr);
         })
-
     } catch (err) {
         failed(res, err);
     }
