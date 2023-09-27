@@ -183,7 +183,7 @@ exports.updateHotel = async (req, res) => {
 
         if (hotelImage.length > 0) {
             hotelImage.forEach(async (image) => {
-                const upload = await uploadToCloudinary(image, 'hotelImage');
+                const upload = await uploadToCloudinary(image, process.env.HOTEL_IMAGE_UPLOAD_FOLDER);
                 await Hotel.findByIdAndUpdate(hotelId, {
                     $push: {
                         imageURL: upload.secure_url,
@@ -221,13 +221,13 @@ exports.deleteHotel = async (req, res) => {
 
         // Validation
         if (!hotelId) {
-            throw error("Unknown Hotel Selection", 402)
+            throw customError("Unknown Hotel Selection", 402)
         }
         const hotel = await Hotel.findById({ _id: hotelId });
         if (!hotel) {
-            throw error("Unable to find the hotel", 404);
+            throw customError("Unable to find the hotel", 404);
         }
-        if (userId !== hotel.owner) {
+        if (userId !== String(hotel.owner)) {
             throw customError("This Hotel Doesn't belongs to you.", 401);
         }
 

@@ -1,7 +1,7 @@
 const cloudinary = require('cloudinary').v2;
 
-const uploadToCloudinary = async(file, folder, quality)=>{
-    const option = { folder: `Hotel-Management-App/${folder}/` }
+const uploadToCloudinary = async(file, folder, category, quality)=>{
+    const option = { folder: `Hotel-Management-App/${folder}/${category}/` }
     if(quality){
         option.quality = quality;
     }
@@ -11,4 +11,9 @@ const uploadToCloudinary = async(file, folder, quality)=>{
     return await cloudinary.uploader.upload(file.tempFilePath, option);
 }
 
+const deleteFromCloudinary = async(files)=>{
+    return cloudinary.api.delete_resources(files);
+}
+
 module.exports = uploadToCloudinary;
+module.exports = deleteFromCloudinary;
