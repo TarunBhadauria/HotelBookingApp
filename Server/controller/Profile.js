@@ -47,22 +47,31 @@ exports.updateProfilePicture = async(req, res)=>{
         if(!profilePicture){
             throw customError('Unable to get Image');
         }
-        const fileSize = (image.size) / (1024*1024);
+        const fileSize = (profilePicture.size) / (1024*1024);
         if(fileSize > 2){
             throw customError('Image size should be 2MB at max', 404);
         }
 
         // Perform Task
         const upload = uploadToCloudinary(profilePicture, process.env.PROFILE_PICTURE_UPLOAD_FOLDER);
-        const getUrl = (await upload).secure_url;
-        const profileId = (await User.findById(userId)).profile;
-        await   Profile.findByIdAndUpdate(profileId, {userImage: getUrl});
 
-        // Send Response
-        res.status(200).json({
-            success: true,
-            message: 'Successfully updated the profile picture',
+        let data = null;
+
+        upload.then(async(data)=>{
+            const getUrl = (data).secure_url;
+            const profileId = (await User.findById(userId)).profile;
+            await   Profile.findByIdAndUpdate(profileId, {userImage: getUrl});
+    
+            // Send Response
+            return res.status(200).json({
+                success: true,
+                message: 'Successfully updated the profile picture',
+            })
+        }).catch((err)=>{
+            const error = customError(err);
+            return failed(res, error);
         })
+
     }catch(err){
         failed(res, err);
     }

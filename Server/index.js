@@ -4,6 +4,8 @@ const app = express();
 //  Connection with Databse
 const connectDB = require('./config/database');
 connectDB();
+const connectCloud = require('./config/cloudinary')
+connectCloud();
 // Import Cors
 const cors = require('cors')
 //  Importing Middlewares
