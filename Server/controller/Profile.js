@@ -3,7 +3,7 @@ const Notification = require("../models/Notification");
 const Profile = require("../models/Profile");
 const User = require("../models/User");
 const { failed, customError } = require("../utils/errorHandler");
-const uploadToCloudinary = require("../utils/uploadHandler");
+const { uploadToCloudinary } = require("../utils/uploadHandler");
 
 
 exports.updateUserDetails = async(req, res)=>{
@@ -53,7 +53,7 @@ exports.updateProfilePicture = async(req, res)=>{
         }
 
         // Perform Task
-        const upload = uploadToCloudinary(profilePicture, process.env.PROFILE_PICTURE_UPLOAD_FOLDER);
+        const upload = uploadToCloudinary(profilePicture, process.env.PROFILE_PICTURE_UPLOAD_FOLDER, userId);
 
         let data = null;
 
