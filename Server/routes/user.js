@@ -8,8 +8,8 @@ const authN = require('../middlewares/authN');
 const { signup, login, changePassword, deleteUser } = require('../controller/User');
 
 //  Assigning Routes to controllers and middlewares
-router.post('/signupUser', signup)
-router.get('/loginUser', login)
+router.post('/signup', signup)
+router.get('/login', login)
 router.put('/changePassword', authN, changePassword)
 router.delete('/deleteUser', authN, deleteUser)
 

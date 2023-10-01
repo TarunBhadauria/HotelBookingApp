@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 const authN = async(req, res, next) => {
     try{
         //  Fetch Token
-        const token = req.cookie.token || req.header('Authorization')?.replace('Bearer ', '') || req.body.token;
+        const token = req.cookies?.token || req.header('Authorization')?.replace('Bearer ', '') || req.body?.token;
 
         //  Validate Token
         if(!token){

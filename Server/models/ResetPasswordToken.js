@@ -21,7 +21,7 @@ const ResetPasswordTokenSchema = new  mongoose.Schema({
 })
 
 ResetPasswordTokenSchema.post("save", async(data)=>{
-    mailSender(data.email, 'Reset Password Token', resetPasswordMail(`${data.firstName} ${data.lastName}`, this.token));
+    mailSender(data.email, 'Reset Password Token', resetPasswordMail(`${data.firstName} ${data.lastName}`, data.token));
 })
 
 module.exports = mongoose.model('ResetPasswordToken', ResetPasswordTokenSchema);
