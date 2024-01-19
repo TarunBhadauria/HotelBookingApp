@@ -1,5 +1,4 @@
-import { setLoader } from "../../slices/authSlice"
-import { objectToFormData } from "../../utils/objectToFormData";
+import { setLoader } from "../../slices/userSlice"
 import { userEndpoints } from "../api";
 import { apiConnector } from "../apiConnector";
 
@@ -9,8 +8,6 @@ export const signIn = (data) => {
     return async (dispatch) => {
         dispatch(setLoader(true));
 
-        const fData = objectToFormData(data);
-
         try {
             const response = await apiConnector('POST', LOGIN_API, data);
 
@@ -18,5 +15,7 @@ export const signIn = (data) => {
         } catch (err) {
             console.log(err);
         }
+
+        dispatch(setLoader(false));
     }
 }
