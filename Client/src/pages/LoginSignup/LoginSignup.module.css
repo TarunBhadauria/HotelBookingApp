@@ -1,0 +1,56 @@
+.LoginSignup {
+    margin: 80px auto;
+    width: 560px;
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 0 6px 2px rgba(0, 0, 0, 0.342);
+}
+
+.LoginSignup>h1 {
+    font-size: 2.8rem;
+    font-weight: 600;
+    color: rgb(32, 104, 187);
+    text-align: center;
+}
+
+.accountSelector {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 100px;
+    box-shadow: inset 0 0 4px 0px black;
+}
+
+.accountSelector>label>input {
+    all: unset;
+}
+
+.accountSelector>label {
+    padding: 0.25rem;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+}
+
+.accountSelector input:checked+p {
+    padding: 0.25rem;
+    border-radius: 1rem;;
+    box-shadow: 0 0 4px 0px black;
+}
+
+.field{
+    display: flex;
+    flex-direction: column;
+}
+
+.field>label{
+    font-weight: 500;
+    font-size: 0.7rem;
+}
+
+.field>input{
+    border: 1px solid black;
+    border-radius: 0.5rem;
+    padding: .25rem;
+}

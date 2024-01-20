@@ -10,11 +10,14 @@ const Notification = require('../models/Notification')
 exports.signup = async(req, res)=>{
     try{
         // Fetching
-        const { email, password, firstName, lastName, accountType } = req.body;
+        const { email, password, confirmPassword, firstName, lastName, accountType } = req.body;
 
         // Validation
-        if(!email || !password || !firstName || !lastName || !accountType){
+        if(!email || !password || !confirmPassword || !firstName || !lastName || !accountType){
             throw customError('All fields are required');
+        }
+        if(password !== confirmPassword){
+            throw customError('Password is not matching')
         }
         if(password.length < 8){
             throw customError('Minimum Password length should be 8 characters.');

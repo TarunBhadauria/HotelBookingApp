@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 
 
 const ProtectedRoute = ({children})=>{
-    const { token } = useSelector((state)=>state.auth);
+    const { token } = useSelector((state)=>state.user);
 
 
     if(!token){
