@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux';
 import { signup } from '../../services/operations/userAPI';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import TextField from '@mui/material/TextField';
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -21,6 +22,7 @@ const Signup = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const onChangeHandler = (e) => {
+        console.log(e);
         setFormData((prev) => ({
             ...prev,
             [e.target.name]: e.target.value
@@ -29,7 +31,6 @@ const Signup = () => {
 
     const onSubmitHandler = (e) => {
         e.preventDefault();
-
         signup(formData)(dispatch);
     }
 
@@ -51,40 +52,33 @@ const Signup = () => {
                         <p>Admin</p>
                     </label>
                 </div>
-                <div>
-                    <div className={`${style.field}`}>
-                        <label>First Name:</label>
-                        <input name='firstName' onChange={onChangeHandler} placeholder='Enter your first name' type='text' value={formData.firstName} />
+                <div className={style.mainForm}>
+                    <div className={style.multiField}>
+                        <TextField required label="First Name" type='text' onChange={onChangeHandler} name='firstName' value={formData.firstName} />
+                        <TextField required label="Last Name" name='lastName' onChange={onChangeHandler} type='text' value={formData.lastName} />
                     </div>
-                    <div className={`${style.field}`}>
-                        <label>Last Name:</label>
-                        <input name='lastName' onChange={onChangeHandler} placeholder='Enter your last name' type='text' value={formData.lastName} />
-                    </div>
-                </div>
-                <div className={`${style.field}`}>
-                    <label>Email:</label>
-                    <input name='email' onChange={onChangeHandler} placeholder='Enter your email Id' type='email' value={formData.email} />
-                </div>
-                <div>
-                    <div className={`${style.field}`}>
-                        <label>Password:</label>
-                        <input name='password' onChange={onChangeHandler} placeholder='Enter your password' type={showPassword ? 'text' : 'password'} value={formData.password} />
-                        {
-                            showPassword ? <FaEyeSlash onClick={() => setShowPassword(false)} /> : <FaEye onClick={() => setShowPassword(true)} />
-                        }
-                    </div>
-                    <div className={`${style.field}`}>
-                        <label>Confirm Password:</label>
-                        <input name='confirmPassword' onChange={onChangeHandler} placeholder='Enter your confirm password' type={showConfirmPassword ? 'text' : 'password'} value={formData.confirmPassword} />
-                        {
-                            showConfirmPassword ? <FaEyeSlash onClick={() => setShowConfirmPassword(false)} /> : <FaEye onClick={() => setShowConfirmPassword(true)} />
-                        }
+                    <TextField required label="Email" name='email' onChange={onChangeHandler} type='email' value={formData.email} />
+                    <div className={style.multiField}>
+                        <div>
+                            <TextField required label='Password' name='password' onChange={onChangeHandler} type={showPassword ? 'text' : 'password'} value={formData.password} />
+                            {
+                                showPassword ? <FaEyeSlash onClick={() => setShowPassword(false)} /> : <FaEye onClick={() => setShowPassword(true)} />
+                            }
+                        </div>
+                        <div>
+                            <TextField required error={formData.password === formData.confirmPassword ? false : true} label='Confirm Password' name='confirmPassword' onChange={onChangeHandler} type={showConfirmPassword ? 'text' : 'password'} value={formData.confirmPassword} />
+                            {
+                                showConfirmPassword ? <FaEyeSlash onClick={() => setShowConfirmPassword(false)} /> : <FaEye onClick={() => setShowConfirmPassword(true)} />
+                            }
+                        </div>
                     </div>
                 </div>
-                <button onClick={() => navigate('/login')} > Login</button>
                 <button type='submit'> Sign Up </button>
             </form>
-            <button onClick={() => navigate('/')}>Go Home</button>
+            <div className={style.otherButtons}>
+                <button onClick={() => navigate('/login')} > Login</button>
+                <button onClick={() => navigate('/')}>Go Home</button>
+            </div>
         </div>
     )
 }

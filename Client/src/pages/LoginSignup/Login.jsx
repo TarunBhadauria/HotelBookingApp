@@ -3,6 +3,7 @@ import style from './LoginSignup.module.css'
 import { useNavigate } from 'react-router-dom'
 import { signIn } from '../../services/operations/userAPI';
 import { useDispatch } from 'react-redux';
+import { TextField } from '@mui/material';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -21,7 +22,7 @@ const Login = () => {
         }))
     }
 
-    const handleOnSubmit = (e)=>{
+    const handleOnSubmit = (e) => {
         e.preventDefault();
         signIn(formData)(dispatch);
     }
@@ -31,21 +32,15 @@ const Login = () => {
             <h1>
                 Login
             </h1>
-            <form onSubmit={handleOnSubmit}>
-                <div>
-                    <p>Enter your email: </p>
-                    <input type='email' value={formData.email} name='email' onChange={handleOnChange} />
-                </div>
-                <div>
-                    <p>Enter your email: </p>
-                    <input type='password' value={formData.password} name='password' onChange={handleOnChange} />
-                </div>
-                <div>
-                    <button type='submit'>Login</button>
-                    <button onClick={() => navigate('/signup')}>Signup</button>
-                </div>
+            <form className={style.mainForm} onSubmit={handleOnSubmit}>
+                <TextField required label='Email' type='email' value={formData.email} name='email' onChange={handleOnChange} />
+                <TextField required label='Password' type='password' value={formData.password} name='password' onChange={handleOnChange} />
+                <button type='submit'>Login</button>
             </form>
-            <button onClick={()=>navigate('/')}>Go Home</button>
+            <div className={style.otherButtons}>
+                <button onClick={() => navigate('/signup')}>Signup</button>
+                <button onClick={() => navigate('/')}>Go Home</button>
+            </div>
         </div>
     )
 }
