@@ -9,7 +9,7 @@ const { signup, login, changePassword, deleteUser } = require('../controller/Use
 
 //  Assigning Routes to controllers and middlewares
 router.post('/signup', signup)
-router.get('/login', login)
+router.post('/login', login)
 router.put('/changePassword', authN, changePassword)
 router.delete('/deleteUser', authN, deleteUser)
 
