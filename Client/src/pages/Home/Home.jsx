@@ -1,26 +1,8 @@
 import React from 'react'
-import style from './Home.module.css'
 import { AiOutlineSearch } from "react-icons/ai";
+import exploreOptions from '../../assets/data/exploreOptions.json'
 // box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 
-const exploreOptions = [
-  {
-    title: "Where",
-    description: "Search Destinations"
-  },
-  {
-    title: "Check In ",
-    description: "Add Dates"
-  },
-  {
-    title: "Check Out",
-    description: "Add Dates"
-  },
-  {
-    title: "Who ?",
-    description: "Add Guests"
-  },
-]
 
 const Home = () => {
   return (
