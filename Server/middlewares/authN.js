@@ -6,7 +6,7 @@ const authN = async(req, res, next) => {
     try{
         //  Fetch Token
         const token = req.cookies?.token || req.header('Authorization')?.replace('Bearer ', '') || req.body?.token;
-
+        console.log("Token : ",token)
         //  Validate Token
         if(!token){
             throw customError('Unable to get token', 401);

@@ -5,6 +5,7 @@ import OpenRoutes from './routes/OpenRoutes';
 import Login from './pages/LoginSignup/Login';
 import Signup from './pages/LoginSignup/Signup';
 import Home from './pages/Home/Home';
+import Footer from './components/common/Footer';
 
 function App() {
     return (
@@ -24,6 +25,7 @@ function App() {
                     </OpenRoutes>
                 } />
             </Routes>
+            <Footer/>
         </div>
     );
 }

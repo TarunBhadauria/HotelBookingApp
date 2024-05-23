@@ -3,6 +3,8 @@ const mailer = require("../config/mailer")
 
 const sendMail = async(to, subject, html)=>{
     try{
+        console.log("Username : ",process.env.NODEMAILER_USERNAME);
+        console.log("Password : ",process.env.NODEMAILER_PASSWORD);
         const mailOptions = {
             from: 'Suitscape',
             to, 

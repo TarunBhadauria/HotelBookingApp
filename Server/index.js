@@ -12,7 +12,7 @@ const cors = require('cors')
 const cookieParser = require('cookie-parser');
 const fileUpload = require('express-fileupload');
 const dotEnv = require('dotenv');
-
+dotEnv.config();
 //  Using Middlewares
 app.use(cookieParser());
 app.use(express.json());
@@ -29,7 +29,6 @@ app.use(
         credentials: true,
     })
 )
-dotEnv.config();
 
 //  Importing routes
 const authRoute = require('./routes/auth')

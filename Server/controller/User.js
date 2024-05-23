@@ -36,7 +36,7 @@ exports.signup = async(req, res)=>{
         const newProfile = await    Profile.create({
             userImage: `https://ui-avatars.com/api/?name=${firstName}+${lastName}&bold=true`,
         })
-
+        console.log(hashPassword)
         const createUser = await    User.create({
             firstName: firstName,
             lastName: lastName,
@@ -45,8 +45,9 @@ exports.signup = async(req, res)=>{
             accountType: accountType,
             profile: newProfile._id,
         })
-
-
+        
+        console.log(createUser)
+        
         // Response
         res.status(200).json({
             success: true,

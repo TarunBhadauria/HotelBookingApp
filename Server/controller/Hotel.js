@@ -3,6 +3,7 @@ const Hotel = require("../models/Hotel");
 const Review = require("../models/Review");
 const Room = require("../models/Room");
 const { uploadToCloudinary } = require("../utils/uploadHandler");
+const { getPublicId } = require("../utils/Helper");
 
 
 exports.getAllHotels = async (req, res) => {
@@ -81,10 +82,9 @@ exports.createHotel = async (req, res) => {
         const { hotelImages } = req.files;
         const { name, address, city, state, pinCode, landmark, facilities } = req.body;
 
-
         // Validation
-        if (!hotelImages || hotelImages.length === 0) {
-            throw customError("Atleast one hotel image is required", 404);
+        if (!hotelImages || hotelImages.length === 0||!Array.isArray(hotelImages)) {
+            throw customError("Atleast two hotel images are required", 404);
         }
         if (!name || !address || !city || !state || !pinCode || !landmark || !facilities) {
             throw customError("All fields are mandatory", 402);
@@ -102,9 +102,10 @@ exports.createHotel = async (req, res) => {
         //     const upload = await uploadToCloudinary(image, 'hotelImage');
         //     newHotel.imageURL.push(upload.secure_url);
         // });
-
+        console.log(hotelImages);
         const uploadPromises = hotelImages.map(async (image) => {
-            const upload = await uploadToCloudinary(image, 'hotelImage', String(name));
+            const filteredName = getPublicId(name);
+            const upload = await uploadToCloudinary(image, 'hotelImage', String(filteredName));
             return upload.secure_url;
         });
 
@@ -120,10 +121,12 @@ exports.createHotel = async (req, res) => {
                 response: savedHotel
             })
         }).catch((err) => {
+            console.log("Error at line 123",err);
             const errorr = customError(err);
             return failed(res, errorr);
         })
     } catch (err) {
+        console.log("Error at line 128",err);
         failed(res, err);
     }
 }

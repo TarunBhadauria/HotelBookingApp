@@ -50,11 +50,14 @@ exports.sendOTP = async(req, res)=>{
         // Validation
         const user = await User.findById(userId);
         const alreadyGenerated = await  OTP.find({user:userId});
-
         if(alreadyGenerated.length !==0){
-            mailSender(user.email, 'Suitscape Verification', verificationMail(`${user.firstName} ${user.lastName}`, alreadyGenerated[0].otp));
+           const result = await mailSender(user.email, 'Suitscape Verification', verificationMail(`${user.firstName} ${user.lastName}`, alreadyGenerated[0].otp));
             // mailSender(user.email, 'Suitscape Verification', `${user.firstName} ${user.lastName} ${alreadyGenerated.otp}`);
-            throw customError('Again, OTP Sent successfully', 200);
+            console.log(result);
+            return res.status(200).json({
+                success: true,
+                message: "Again OTP sent successfully",
+            })
         }
 
         // Perform Task
@@ -69,6 +72,8 @@ exports.sendOTP = async(req, res)=>{
         createOTP.firstName = user.firstName;
         createOTP.lastName = user.lastName;
         createOTP.save();
+
+        console.log(createOTP);
 
         // await   createOTP.save({email: user.email, firstName: user.firstName, lastName: user.lastName});
 

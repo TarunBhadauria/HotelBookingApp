@@ -9,9 +9,9 @@ const { verifyEmail, sendOTP, resetPassword, resetPasswordToken } = require('../
 
 //  Assigning Routes to controllers and middlewares
 router.post('/verifyEmail', authN, verifyEmail);
-router.post('/sendOTP', authN, sendOTP);
+router.post('/sendOTP', authN, sendOTP); 
 router.post('/resetPassword', resetPassword);
-router.post('/resetPasswordToken', resetPasswordToken);
+router.post('/resetPasswordToken', resetPasswordToken);  
 
 //  Exporting router
 module.exports = router;
