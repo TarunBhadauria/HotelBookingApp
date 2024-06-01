@@ -37,6 +37,7 @@ const paymentRoute = require('./routes/payment')
 const profileRoute = require('./routes/profile')
 const reviewRoute = require('./routes/review')
 const userRoute = require('./routes/user')
+const bookingRoute = require('./routes/booking')
 
 //  Assigning Routes
 app.use('/api/v1/authenticate', authRoute)
@@ -45,6 +46,7 @@ app.use('/api/v1/payment', paymentRoute)
 app.use('/api/v1/profile', profileRoute)
 app.use('/api/v1/review', reviewRoute)
 app.use('/api/v1/user', userRoute)
+app.use('/api/v1/booking', bookingRoute);
 
 //  Health Check
 app.get('/', (req, res)=>{

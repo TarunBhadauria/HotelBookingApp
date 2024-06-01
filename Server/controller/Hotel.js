@@ -53,9 +53,10 @@ exports.getHotelDetails = async (req, res) => {
         const hotelDetails = await Hotel.findById(hotelId)
             .populate("owner")
             .populate("rooms")
-            .populate("review")
+            .populate("reviews")
             .exec();
 
+            
         // Return response
         res.status(200).json({
             success: true,
