@@ -1,5 +1,4 @@
 const BASE_URL = process.env.REACT_APP_BASE_URL;
-
 const createEndpoints = (category, apiDefinitions) => {
     const result = {};
     for (const [apiName, endpoint] of Object.entries(apiDefinitions)) {

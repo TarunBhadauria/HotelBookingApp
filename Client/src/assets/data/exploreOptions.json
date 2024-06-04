@@ -1,18 +1,22 @@
 [
     {
       "title": "Where",
-      "description": "Search Destinations"
+      "description": "Search Destinations",
+      "type":"text"
     },
     {
       "title": "Check In ",
-      "description": "Add Dates"
+      "description": "Add Dates",
+      "type":"date"
     },
     {
       "title": "Check Out",
-      "description": "Add Dates"
+      "description": "Add Dates",
+      "type":"date"
     },
     {
       "title": "Who ?",
-      "description": "Add Guests"
+      "description": "Add Guests",
+      "type":"number"
     }
   ]
