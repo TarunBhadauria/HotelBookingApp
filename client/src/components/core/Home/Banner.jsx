@@ -1,5 +1,5 @@
 import React from 'react'
-import HostButton from '../common/HostButton';
+import HostButton from 'components/common/HostButton';
 
 const Banner = () => {
   return (
