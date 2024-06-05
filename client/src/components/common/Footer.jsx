@@ -3,7 +3,7 @@ import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import { List, ListItem } from "@mui/material";
 import Typography from "@mui/material/Typography";
-import { copywrites, footerElems } from "../../assets/data/footerElems";
+import { copywrites, footerElems } from "assets/data/footerElems";
 import { IoGlobeOutline } from "react-icons/io5";
 import { FaFacebookSquare } from "react-icons/fa";
 import { FaSquareXTwitter, FaSquareInstagram } from "react-icons/fa6";
