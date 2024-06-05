@@ -25,7 +25,7 @@ function App() {
                     </OpenRoutes>
                 } />
             </Routes>
-            {/* <Footer/> */}
+            <Footer/>
         </div>
     );
 }
