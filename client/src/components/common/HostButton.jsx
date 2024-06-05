@@ -9,7 +9,7 @@ const navigate = useNavigate();
       onClick={() => {
         navigate("/signup");
       }}
-      className="text-[#303030] hover:scale-90 transition-all duration-120 text-center text-sm py-3 px-6 capitalize bg-[#484848] rounded-full text-white hover:cursor-pointer "
+      className="hidden text-[#303030] hover:scale-90 transition-all duration-120 text-center text-sm py-3 px-6 capitalize bg-[#484848] rounded-full text-white hover:cursor-pointer md:flex "
     >
       Become a host
     </div>

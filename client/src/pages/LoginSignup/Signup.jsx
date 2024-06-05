@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import style from "./LoginSignup.module.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { signup } from "../../services/operations/userAPI";
+import { signup } from "services/operations/userAPI";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import TextField from "@mui/material/TextField";
 import { useForm } from "react-hook-form";

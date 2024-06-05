@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import style from './LoginSignup.module.css'
 import { useNavigate } from 'react-router-dom'
-import { signIn } from '../../services/operations/userAPI';
+import { signIn } from 'services/operations/userAPI';
 import { useDispatch } from 'react-redux';
 import { TextField } from '@mui/material';
 

@@ -1,14 +1,14 @@
-import React from "react";
-import { AiOutlineSearch } from "react-icons/ai";
-import exploreOptions from "../../assets/data/exploreOptions.json";
-import BookingWidget from "../../components/Home/BookingWidget";
-import Card from "../../components/common/Card";
-import HeroSectionCard from "../../components/Home/HeroSectionCard";
-import HostButton from "../../components/common/HostButton";
-import Banner from "../../components/Home/Banner";
-// box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+import React, { useState } from "react";
+import BookingWidget from "components/core/Home/BookingWidget";
+import HeroSectionCard from "components/common/HeroSectionCard";
+import Banner from "components/core/Home/Banner";
+import tempData from "assets/data/tempCards"
 
 const Home = () => {
+  const [latest, setLatest] = useState(tempData)
+  const [nearby, setNearby] = useState(tempData)
+  const [rated, setRated] = useState(tempData)
+
   return (
     <>
       {/* Hero Section 1 */}
@@ -23,20 +23,26 @@ const Home = () => {
           <BookingWidget />
         </div>
       </div>
+
       {/* Latest Property*/}
       <HeroSectionCard
         title="latest on property listing"
         image="https://images.unsplash.com/photo-1584132967334-10e028bd69f7?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-      />
+        data={latest}
+        />
+
       {/* Nearby properties  */}
       <HeroSectionCard
         title="nearby listed properties"
         image="https://images.unsplash.com/photo-1602002418082-a4443e081dd1?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-      />
+        data={nearby}
+        />
+
       {/* Rated properties  */}
       <HeroSectionCard
         title="top rated properties"
         image="https://images.unsplash.com/photo-1608198399988-341f712c3711?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        data={rated}
       />
       {/* Hosting Banner */}
       <Banner/>

@@ -1,6 +1,6 @@
-import { setLoader } from "../../slices/userSlice";
-import { userEndpoints } from "../api";
-import { apiConnector } from "../apiConnector";
+import { setLoader } from "slices/userSlice";
+import { userEndpoints } from "services/api";
+import { apiConnector } from "services/apiConnector";
 import {toast} from "react-hot-toast";
 
 const { LOGIN_API, SIGNUP_API } = userEndpoints;

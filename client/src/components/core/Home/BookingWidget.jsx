@@ -1,6 +1,6 @@
 import React from 'react'
 import { AiOutlineSearch } from "react-icons/ai";
-import exploreOptions from '../../assets/data/exploreOptions.json'
+import exploreOptions from 'assets/data/exploreOptions.json'
 
 const BookingWidget = () => {
   return (
